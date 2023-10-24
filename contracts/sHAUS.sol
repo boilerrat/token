@@ -106,6 +106,12 @@ contract sHAUS is ERC20, Ownable, UUPSUpgradeable {
     }
 
     // DAO Governance functions
+    // TODO
+    // Need to review this
+    // DAO should only be able to change the percentages in the surve and slope.
+    // maybe looking into contract pausing.
+    // might scrap all this anyway.
+    
 
     function createProposal(string memory description, bytes4 functionSig, bytes memory arguments, uint256 duration) public onlyOwner {
         Proposal memory newProposal;
