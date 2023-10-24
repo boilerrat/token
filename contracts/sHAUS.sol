@@ -4,9 +4,18 @@
 pragma solidity ^0.8.21;
 
 import "solady/src/tokens/ERC20.sol";
-import "solady/src/auth/Ownable.sol";
+import "solady/src/auth/Ownable.sol"; // probably changing this to OwnableWithRoles.sol
 import "solady/src/utils/FixedPointMathLib.sol";
 import "solady/src/utils/UUPSUpgradeable.sol";
+
+/*o*o*o*o*o*o*o*o*o*o*o*o*o*o*o*o*o*o*o*o**o*o*o*o*o*o*o*o*o*o*o*o**o*o*o*o*o*o*o*o*o*
+*o* sHAUS is a continuous DAO token with built in revenue generation for a DAO with *o*
+*o* taxable transactions and a burn mechanism.                                      *o*
+*o* The token works on an S curve, which is meant to follow the ebbs and flows of   *o* 
+*o* DAO projects and funding cycles.                                                *o*
+*o* Built in voting mechanisms allow the DAO to change core variables.              *o*
+*o* The DAO can pause the contract, updates S curve variables & adjust tax rates.   *o*
+*o*o*o*o*o*o*o*o*o*o*o*o*o*o*o*o*o*o*o*o**o*o*o*o*o*o*o*o*o*o*o*o**o*o*o*o*o*o*o*o*o*/
 
 contract sHAUS is ERC20, Ownable, UUPSUpgradeable {
     using FixedPointMathLib for uint256;
@@ -57,11 +66,13 @@ contract sHAUS is ERC20, Ownable, UUPSUpgradeable {
         k = _k;
         x0 = _x0;
     }
-
+    // TODO: Spend some more time research the S curve and if it works
     // Implement S-curve logic for pricing
     function calculatePrice(uint256 x) public view returns (uint256) {
         return L / (1 + (x / x0) ** (-k));
     }
+
+    // TODO Get rid of this shit and just go with openZeppelin
 
     // Reentrancy guard
     modifier noReentrancy() {
@@ -110,7 +121,13 @@ contract sHAUS is ERC20, Ownable, UUPSUpgradeable {
     // Need to review this
     // DAO should only be able to change the percentages in the surve and slope.
     // maybe looking into contract pausing.
-    // might scrap all this anyway.
+    // might scrap all this anyway or, start forking in  Moloch ideas.
+    // eg, buring tokens is essentially rage quit.
+    // there is a lot that can be added, keep in mind the limited
+    // permissions the DAO has anyway to change the contract.
+    // it does increase the attack surface substantially.
+    // it also lowers it in that it takes centralized control of those decisions
+    // less likely. 
     
 
     function createProposal(string memory description, bytes4 functionSig, bytes memory arguments, uint256 duration) public onlyOwner {
